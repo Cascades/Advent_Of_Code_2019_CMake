@@ -2,20 +2,37 @@ project(Advent_Of_Code_1)
 
 cmake_minimum_required(VERSION 3.15)
 
-message(STATUS "Reading input file to list...")
+set(ADVENT_OF_CODE_1_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/input_data.txt data)
-STRING(REGEX REPLACE "\n" ";" data ${data})
+function(read_input_data)
+	FILE(READ ${ADVENT_OF_CODE_1_DIR}/input_data.txt data_var)
+	STRING(REGEX REPLACE "\n" ";" data_var ${data_var})
+	set(data ${data_var} PARENT_SCOPE)
+endfunction()
 
-set(sum 0)
 
-message(STATUS "Calculating sum...")
+macro(calc_fuel_req input_value output_var)
+	math(EXPR ${output_var} "(${input_value} / 3) - 2" OUTPUT_FORMAT DECIMAL)
+endmacro()
 
-foreach(num ${data})
-	message(STATUS ${num})
-	math(EXPR value "(${num} / 3) - 2" OUTPUT_FORMAT DECIMAL)
-	message(STATUS "|_ ${value}")
-	math(EXPR sum "${sum} + ${value}" OUTPUT_FORMAT DECIMAL)
-endforeach()
+macro(advent_of_code_1)
+	message(STATUS "Reading input file to list...")
+	read_input_data()
+	
+	set(sum 0)
+	
+	message(STATUS "Calculating sum...")
+	
+	foreach(num ${data})
+		message(STATUS ${num})
+		calc_fuel_req(${num} value)
+		message(STATUS "|_ ${value}")
+		math(EXPR sum "${sum} + ${value}" OUTPUT_FORMAT DECIMAL)
+	endforeach()
+	
+	message(STATUS "Final sum: ${sum}")
+endmacro()
 
-message(STATUS "Final sum: ${sum}")
+if(${CMAKE_CURRENT_LIST_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
+	advent_of_code_1()
+endif()
