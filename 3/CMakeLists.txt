@@ -1,0 +1,56 @@
+project(Advent_Of_Code_1)
+
+cmake_minimum_required(VERSION 3.15)
+
+set(ADVENT_OF_CODE_3_DIR ${CMAKE_CURRENT_LIST_DIR})
+
+function(read_input_data)
+	FILE(READ ${ADVENT_OF_CODE_3_DIR}/input_data.txt data_var)
+	STRING(REGEX REPLACE "," ";" data_var ${data_var})
+	set(data ${data_var} PARENT_SCOPE)
+endfunction()
+
+macro(LIST_REPLACE LIST INDEX NEWVALUE)
+    list(INSERT ${LIST} ${INDEX} ${NEWVALUE})
+    MATH(EXPR __INDEX "${INDEX} + 1")
+    list (REMOVE_AT ${LIST} ${__INDEX})
+endmacro(LIST_REPLACE)
+
+read_input_data()
+
+LIST_REPLACE(data 1 12)
+LIST_REPLACE(data 2 2)
+
+set(pc_offset 0)
+
+while(1)
+	message(STATUS "data: ${data}")
+	list(GET data ${pc_offset} opcode)
+	message(STATUS "opcode: ${opcode}")
+	if(${opcode} EQUAL 99)
+		break()
+	elseif(${opcode} EQUAL 1 OR ${opcode} EQUAL 2)
+		MATH(EXPR operand_0_pos_pos "${pc_offset} + 1" OUTPUT_FORMAT DECIMAL) 
+		list(GET data ${operand_0_pos_pos} operand_0_pos)
+		list(GET data ${operand_0_pos} operand_0)
+		MATH(EXPR operand_1_pos_pos "${pc_offset} + 2" OUTPUT_FORMAT DECIMAL)
+                list(GET data ${operand_1_pos_pos} operand_1_pos)
+		list(GET data ${operand_1_pos} operand_1)
+		MATH(EXPR output_pos_pos "${pc_offset} + 3" OUTPUT_FORMAT DECIMAL)
+		list(GET data ${output_pos_pos} output_pos)
+		if(${opcode} EQUAL 1)
+			MATH(EXPR output "${operand_0} + ${operand_1}" OUTPUT_FORMAT DECIMAL)
+		elseif(${opcode} EQUAL 2)
+			MATH(EXPR output "${operand_0} * ${operand_1}" OUTPUT_FORMAT DECIMAL)
+		endif()
+		message(STATUS "Adding ${operand_0} to ${operand_1} and placing in position ${output_pos}")
+		LIST_REPLACE(data ${output_pos} ${output})
+	else()
+		message(FATAL_ERROR "BAD_OPCODE")
+	endif()
+	MATH(EXPR pc_offset "${pc_offset} + 4" OUTPUT_FORMAT DECIMAL)
+endwhile()
+
+string (REPLACE "," ";" pretty_data "${data}")
+
+message(STATUS "Final_state: ${pretty_data}")
