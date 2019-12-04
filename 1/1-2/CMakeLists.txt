@@ -2,7 +2,7 @@ project(Advent_Of_Code_1)
 
 cmake_minimum_required(VERSION 3.15)
 
-include(../1/CMakeLists.txt)
+include(../1-1/CMakeLists.txt)
 
 message(STATUS "Reading input file to list...")
 
